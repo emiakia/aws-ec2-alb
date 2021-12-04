@@ -7,7 +7,10 @@ on:
   pull_request:
     branches:
       - main
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2196947 (EC2 ALB Modullar)
 jobs:
   terraform:
     name: 'Terraform Apply'
