@@ -8,9 +8,13 @@ on:
     branches:
       - main
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2196947 (EC2 ALB Modullar)
+=======
+      
+>>>>>>> 196ce87 (EC2 ALB Modullar)
 jobs:
   terraform:
     name: 'Terraform Apply'
