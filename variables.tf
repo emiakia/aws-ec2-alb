@@ -16,3 +16,6 @@ variable "env_name" { default = ["build", "stage", "dev", "prod"] }
 variable "region" {}
 variable "backend-bucket" {}
 variable "backend-key" {}
+
+
+# variable "aws_region" { default = "us-west-2"}

@@ -6,61 +6,23 @@ provider "aws" {
 
 
 
-resource "aws_security_group" "scgrp_http_ssh" {
-  name        = "scgrp_http_ssh"
-  description = "Allow inbound SSH and HTTP, all outbound"
-
-  # Allow all outbound traffic
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow inbound SSH traffic on port 22
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Allow inbound HTTP traffic on port 80
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "scgrp_http_ssh"
-  }
-}
-
-output "security_group_id" {
-  value = aws_security_group.scgrp_http_ssh.id
+module "security_group" {
+  source = "./modules/security-group"
+  sg_name = "allow_ssh_http"
 }
 
 
-resource "aws_instance" "sample_http_server" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  key_name      = var.key_name
 
-  # Attach the security group created above
-  vpc_security_group_ids = [aws_security_group.scgrp_http_ssh.id]
+# output "security_group_id" {
+#   value = aws_security_group.scgrp_http_ssh.id
+# }
 
-  tags = {
-    Name = "sample_http_server"
-    # Name = var.machine_name
-    # Name       = "${var.machine_name} ${count.index}"
-    # Name       = "Emran ${count.index}"
-    created_by = local.created_by
-    owner      = local.owner
-  }
 
+
+module "ec2_instance" {
+  source = "./modules/ec2"
+  instance_type = "t2.micro"
+  security_group_id = module.security_group.sg_id
   user_data = <<-EOF
               #!/bin/bash
               # Use this for your user data (script from top to bottom)
@@ -73,18 +35,18 @@ resource "aws_instance" "sample_http_server" {
               EOF
 }
 
-output "ec2_instance_id" {
-  value = aws_instance.sample_http_server.id
-}
 
-output "ec2_public_dns" {
-  value = aws_instance.sample_http_server.public_dns
-}
+# output "ec2_instance_id" {
+#   value = aws_instance.sample_http_server.id
+# }
+
+# output "ec2_public_dns" {
+#   value = aws_instance.sample_http_server.public_dns
+# }
 
 output "ec2_public_ip" {
-  value = aws_instance.sample_http_server.public_ip
+  value = module.ec2_instance.public_ip
 }
-
 
 
 # resource "aws_instance" "Emran01" {
