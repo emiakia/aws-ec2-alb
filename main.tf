@@ -7,10 +7,11 @@ provider "aws" {
 
 
 module "security_group" {
-  source = "./modules/security-group"
-  sg_name = "allow_ssh_http"
-}
+  source = "./modules/security_group"
 
+  name   = "my-security-group"
+  vpc_id = "vpc-0cc7e1e8d0e236d78"
+}
 
 
 # output "security_group_id" {
@@ -18,15 +19,15 @@ module "security_group" {
 # }
 
 
-
-module "ec2_instance" {
+module "ec2" {
   source = "./modules/ec2"
-  instance_type = "t2.micro"
-  security_group_id = module.security_group.sg_id
-  user_data = <<-EOF
+
+  ami             = var.ami_id
+  instance_type   = var.instance_type
+  security_groups = [module.security_group.id]
+
+  user_data       = <<-EOF
               #!/bin/bash
-              # Use this for your user data (script from top to bottom)
-              # install httpd (Linux 2 version)
               yum update -y
               yum install -y httpd
               systemctl start httpd
@@ -35,6 +36,14 @@ module "ec2_instance" {
               EOF
 }
 
+terraform {
+  backend "s3" {
+    bucket = "dev-terraform-tutorial"
+    key    = "terraform.tfstate"
+    # region = var.region
+    region = "eu-central-1"
+  }
+}
 
 # output "ec2_instance_id" {
 #   value = aws_instance.sample_http_server.id
@@ -44,9 +53,9 @@ module "ec2_instance" {
 #   value = aws_instance.sample_http_server.public_dns
 # }
 
-output "ec2_public_ip" {
-  value = module.ec2_instance.public_ip
-}
+# output "ec2_public_ip" {
+#   value = module.ec2_instance.public_ip
+# }
 
 
 # resource "aws_instance" "Emran01" {

@@ -9,13 +9,16 @@ variable "ami_id" {
   type        = string
   description = "this is ami id for the machine"
 }
+
+variable "region" {
+  description = "The AWS region to create resources in"
+  default     = "eu-central-1"
+}
+
 variable "instance_type" {}
 variable "key_name" {}
 variable "machine_name" {}
-variable "env_name" { default = ["build", "stage", "dev", "prod"] }
-variable "region" {}
 variable "backend-bucket" {}
 variable "backend-key" {}
 
 
-# variable "aws_region" { default = "us-west-2"}
