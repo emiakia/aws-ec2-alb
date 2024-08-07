@@ -1,29 +1,63 @@
-
 # Configure the AWS Provider
 provider "aws" {
   region = var.region
 }
 
-resource "aws_iam_user" "Emran01" {
-  name = "Emran01"
-  path = "/system/"
+module "security_group" {
+  source = "./modules/security_group"
+
+  name = "my-security-group"
+  # vpc_id = "vpc-0cc7e1e8d0e236d78"
+  # vpc_id = var.vpc_id
+  tags = var.tags
+
+}
+
+module "ec2" {
+  source          = "./modules/ec2"
+  ami             = var.ami_id
+  instance_type   = var.instance_type
+  security_groups = [module.security_group.id]
+  key_name        = var.key_name
+
+  count = 2
 
   tags = {
-    created_by = "Terraform"
+    Name = "${var.machine_name} ${count.index}"
   }
+
+  created_by = var.created_by
+  user_data  = <<-EOF
+              #!/bin/bash
+              yum update -y
+              yum install -y httpd
+              systemctl start httpd
+              systemctl enable httpd
+              echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
+              EOF
+  # tags       = var.tags
+
 }
 
-resource "aws_iam_policy" "example_policy" {
-  name        = "example_policy"
-  description = "A policy to grant read-only access to S3"
-  policy      = file("iam_policy.json")
 
-}
-resource "aws_iam_policy_attachment" "example_user_policy_attachment" {
-  name       = "example_user_policy_attachment"
-  users      = [aws_iam_user.Emran01.name]
-  policy_arn = aws_iam_policy.example_policy.arn
-}
+
+
+
+
+
+
+# output "ec2_instance_id" {
+#   value = aws_instance.sample_http_server.id
+# }
+
+# output "ec2_public_dns" {
+#   value = aws_instance.sample_http_server.public_dns
+# }
+
+# output "ec2_public_ip" {
+#   value = module.ec2_instance.public_ip
+# }
+
 
 # resource "aws_instance" "Emran01" {
 #   ami           = var.ami_id
@@ -69,7 +103,7 @@ resource "aws_iam_policy_attachment" "example_user_policy_attachment" {
 #   }
 # }
 
-/*
+
 # module "ec2_emran1" {
 #   source        = "./module/ec2"
 #   instance_name = "v011"
@@ -81,4 +115,3 @@ resource "aws_iam_policy_attachment" "example_user_policy_attachment" {
 #   instance_name = "v012"
 #   key_name = "devKey"
 # }
-*/
