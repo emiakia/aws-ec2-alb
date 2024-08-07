@@ -1,7 +1,7 @@
 resource "aws_security_group" "sg" {
   name        = var.name
   description = "Allow SSH and HTTP inbound traffic"
-  vpc_id      = var.vpc_id
+  # vpc_id      = var.vpc_id
 
   ingress {
     description = "SSH"
@@ -26,7 +26,5 @@ resource "aws_security_group" "sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags = {
-    Name = var.name
-  }
+ tags = var.tags
 }

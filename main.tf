@@ -1,32 +1,33 @@
-
 # Configure the AWS Provider
 provider "aws" {
   region = var.region
 }
 
-
-
 module "security_group" {
   source = "./modules/security_group"
 
-  name   = "my-security-group"
-  vpc_id = "vpc-0cc7e1e8d0e236d78"
+  name = "my-security-group"
+  # vpc_id = "vpc-0cc7e1e8d0e236d78"
+  # vpc_id = var.vpc_id
+  tags = var.tags
+
 }
 
-
-# output "security_group_id" {
-#   value = aws_security_group.scgrp_http_ssh.id
-# }
-
-
 module "ec2" {
-  source = "./modules/ec2"
-
+  source          = "./modules/ec2"
   ami             = var.ami_id
   instance_type   = var.instance_type
   security_groups = [module.security_group.id]
+  key_name        = var.key_name
 
-  user_data       = <<-EOF
+  count = 2
+
+  tags = {
+    Name = "${var.machine_name} ${count.index}"
+  }
+
+  created_by = var.created_by
+  user_data  = <<-EOF
               #!/bin/bash
               yum update -y
               yum install -y httpd
@@ -34,7 +35,14 @@ module "ec2" {
               systemctl enable httpd
               echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
               EOF
+  # tags       = var.tags
+
 }
+
+
+
+
+
 
 terraform {
   backend "s3" {
@@ -102,7 +110,7 @@ terraform {
 #   }
 # }
 
-/*
+
 # module "ec2_emran1" {
 #   source        = "./module/ec2"
 #   instance_name = "v011"
@@ -114,4 +122,3 @@ terraform {
 #   instance_name = "v012"
 #   key_name = "devKey"
 # }
-*/

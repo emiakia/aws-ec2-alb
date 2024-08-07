@@ -1,16 +1,17 @@
 
-# output "ec2_public_dns" {
-#   value = aws_instance.example.public_dns
+# output "ec2_instance_dns" {
+#   value = module.ec2.public_dns
+# }
+
+# output "ec2_instance_id" {
+#   value = module.ec2.instance_id
 # }
 
 # output "ec2_public_ip" {
-#   value = aws_instance.example.public_ip
+#   value = module.ec2.public_ip
 # }
 
-output "ec2_instance_id" {
-  value = module.ec2.instance_id
+output "id" {
+  value = module.security_group.id
 }
 
-output "ec2_public_ip" {
-  value = module.ec2.public_ip
-}

@@ -17,3 +17,18 @@ variable "user_data" {
   description = "The user data to provide when launching the instance"
   type        = string
 }
+
+variable "key_name" {
+  description = "The key name for SSH access"
+  type        = string
+}
+
+variable "created_by" {
+  description = "Create by Who terraform or Myself"
+  type        = string
+}
+
+variable "tags" {
+  description = "A map of tags to assign to the resource"
+  type        = map(string)
+}
