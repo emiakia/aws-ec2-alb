@@ -44,14 +44,7 @@ module "ec2" {
 
 
 
-terraform {
-  backend "s3" {
-    bucket = "dev-terraform-tutorial"
-    key    = "terraform.tfstate"
-    # region = var.region
-    region = "eu-central-1"
-  }
-}
+
 
 # output "ec2_instance_id" {
 #   value = aws_instance.sample_http_server.id

@@ -1,14 +1,22 @@
 
-
 # terraform {
-
-
 #   backend "s3" {
 #     bucket = "dev-terraform-tutorial"
-#     key    = "build/airflow/terraform.tfstate"
+#     key    = "terraform.tfstate"
+#     # region = var.region
 #     region = "eu-central-1"
 #   }
+# }
 
+
+terraform {
+
+  backend "s3" {
+    bucket = "dev-terraform-tutorial"
+    key    = "build/airflow/terraform.tfstate"
+    region = "eu-central-1"
+  }
+}
 
 #   required_providers {
 #     aws = {
