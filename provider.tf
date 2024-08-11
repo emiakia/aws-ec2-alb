@@ -7,7 +7,10 @@
 #     region = "eu-central-1"
 #   }
 # }
-
+# Configure the AWS Provider
+provider "aws" {
+  region = var.region
+}
 
 terraform {
 

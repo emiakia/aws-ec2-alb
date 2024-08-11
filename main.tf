@@ -1,7 +1,7 @@
 # Configure the AWS Provider
-provider "aws" {
-  region = var.region
-}
+# provider "aws" {
+#   region = var.region
+# }
 
 module "security_group" {
   source = "./modules/security_group"
@@ -33,7 +33,7 @@ module "ec2" {
               yum install -y httpd
               systemctl start httpd
               systemctl enable httpd
-              echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
+              echo "<h1>This is Emran's Web Server <b>From $(hostname -f)</h1>" > /var/www/html/index.html
               EOF
   # tags       = var.tags
 
