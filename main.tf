@@ -1,27 +1,22 @@
-# Configure the AWS Provider
-provider "aws" {
-  region = var.region
-}
-
+# Security Group Module
 module "security_group" {
-  source = "./modules/security_group"
-
-  name = "my-security-group"
-  # vpc_id = "vpc-0cc7e1e8d0e236d78"
-  # vpc_id = var.vpc_id
-  tags = var.tags
-
+  source        = "./modules/security_group"
+  name          = var.sg_name
+  description   = var.sg_description
+  vpc_id        = var.vpc_id
+  ingress_rules = var.ingress_rules
+  egress        = var.egress_rule
+  tags          = var.tags
 }
 
+# EC2 instance Module
 module "ec2" {
   source          = "./modules/ec2"
   ami             = var.ami_id
   instance_type   = var.instance_type
   security_groups = [module.security_group.id]
   key_name        = var.key_name
-
-  count = 2
-
+  count           = 2
   tags = {
     Name = "${var.machine_name} ${count.index}"
   }
@@ -35,7 +30,6 @@ module "ec2" {
               systemctl enable httpd
               echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
               EOF
-  # tags       = var.tags
 
 }
 
