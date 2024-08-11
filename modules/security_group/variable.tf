@@ -1,16 +1,29 @@
-variable "name" {
-  description = "Name of the security group"
-  type        = string
+variable "name" {}
+variable "tags" {}
+variable "description" {}
+variable "vpc_id" {}
+
+variable "ingress_rules" {
+  description = "List of ingress rules"
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
 }
 
-# variable "vpc_id" {
-#   description = "The VPC ID to create the security group in"
-#   type        = string
-#   default     = "vpc-0cc7e1e8d0e236d78" 
-# }
-
-
-variable "tags" {
-  description = "A map of tags to assign to the resource"
-  type        = map(string)
+variable "egress" {
+  description = "Egress rule"
+  type = list(object({
+    description = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
 }
+
+
+
