@@ -1,8 +1,6 @@
-
-
 variable "ami_id" {}
 
-variable "region" { description = "The AWS region to create resources in" }
+variable "region" {}
 
 variable "instance_type" {}
 variable "key_name" {}
@@ -14,7 +12,6 @@ variable "created_by" {}
 variable "tags" {}
 variable "sg_name" {}
 variable "sg_description" {}
-
 
 variable "ingress_rules" {
   description = "List of ingress rules"
