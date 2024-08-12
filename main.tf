@@ -1,3 +1,4 @@
+
 # Security Group Module
 module "security_group" {
   source        = "./modules/security_group"
@@ -5,7 +6,7 @@ module "security_group" {
   description   = var.sg_description
   vpc_id        = var.vpc_id
   ingress_rules = var.ingress_rules
-  egress        = var.egress_rule
+  egress_rules  = var.egress_rule
   tags          = var.tags
 }
 
@@ -14,14 +15,16 @@ module "ec2" {
   source          = "./modules/ec2"
   ami             = var.ami_id
   instance_type   = var.instance_type
-  security_groups = [module.security_group.id]
+  security_groups = var.create_sg ? [module.security_group.id] : [var.default_sg]
   key_name        = var.key_name
-  count           = 2
+  count = var.count_instance
+
   tags = {
     Name = "${var.machine_name} ${count.index}"
   }
 
   created_by = var.created_by
+
   user_data  = <<-EOF
               #!/bin/bash
               yum update -y
@@ -30,7 +33,6 @@ module "ec2" {
               systemctl enable httpd
               echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
               EOF
-
 }
 
 
