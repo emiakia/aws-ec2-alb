@@ -14,8 +14,8 @@ variable "ingress_rules" {
   }))
 }
 
-variable "egress" {
-  description = "Egress rule"
+variable "egress_rules" {
+  description = "List of egress rules"
   type = list(object({
     description = string
     from_port   = number
