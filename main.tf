@@ -3,6 +3,7 @@ provider "aws" {
 }
 module "security_group" {
   source        = "./modules/security_group"
+  # count = 1
   name          = var.sg_name
   description   = var.sg_description
   vpc_id        = var.vpc_id
@@ -11,21 +12,23 @@ module "security_group" {
   tags          = var.tags
 }
 
+
+
 module "ec2" {
   source          = "./modules/ec2"
   ami             = var.ami_id
   instance_type   = var.instance_type
   security_groups = var.create_sg ? [module.security_group.id] : [var.default_sg]
   key_name        = var.key_name
-  count = var.count_instance
-
-  tags = {
-    Name = "${var.machine_name} ${count.index}"
-  }
-
+  count_instance  = var.count_instance
+  machine_name    = var.machine_name
+  # tags = {
+  #   Name = "${var.machine_name} ${count.index}"
+  # }
+  tags            = var.tags
   created_by = var.created_by
 
-  user_data  = <<-EOF
+  user_data = <<-EOF
               #!/bin/bash
               yum update -y
               yum install -y httpd
@@ -35,59 +38,24 @@ module "ec2" {
               EOF
 
 }
-resource "aws_instance" "web" {
-  count         = 2
-  ami           = "ami-071878317c449ae48"
-  instance_type = "t2.micro"
-
-  user_data  = <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              systemctl start httpd
-              systemctl enable httpd
-              echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
-              EOF
-
-  tags = {
-    Name = "WebServer${count.index + 1}"
-  }
-}
-
-resource "aws_security_group" "web_sg" {
-  name        = "web_sg"
-  description = "Allow HTTP traffic"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-resource "aws_lb" "alb" {
-  name               = "web-alb"
+# Load Balancer and Target Group Configuration
+resource "aws_lb" "web_lb" {
+  name               = "web-lb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.web_sg.id]
-  subnets            = ["subnet-093f0311edbfe83fb", "subnet-0a21b416cfd5ab2a3", "subnet-04f0df809d5307602"] # Replace with your subnet IDs
+  security_groups    = [module.security_group.id]
+  subnets            = var.subnets
 
   enable_deletion_protection = false
+
+  tags = var.tags
 }
 
 resource "aws_lb_target_group" "web_tg" {
   name     = "web-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = "vpc-0cc7e1e8d0e236d78" # Replace with your VPC ID
+  vpc_id   = var.vpc_id
 
   health_check {
     path                = "/"
@@ -98,11 +66,13 @@ resource "aws_lb_target_group" "web_tg" {
     healthy_threshold   = 3
     unhealthy_threshold = 2
   }
+
+  tags = var.tags
 }
 
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.alb.arn
-  port              = "80"
+resource "aws_lb_listener" "web_listener" {
+  load_balancer_arn = aws_lb.web_lb.arn
+  port              = 80
   protocol          = "HTTP"
 
   default_action {
@@ -111,15 +81,11 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "web" {
-  count            = 2
+resource "aws_lb_target_group_attachment" "web_tg_attachment" {
+  count            = var.count_instance
   target_group_arn = aws_lb_target_group.web_tg.arn
-  target_id        = aws_instance.web[count.index].id
+  target_id        = module.ec2.instance_ids[count.index]
   port             = 80
-}
-
-output "alb_dns_name" {
-  value = aws_lb.alb.dns_name
 }
 
 

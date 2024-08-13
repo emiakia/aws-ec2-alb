@@ -1,6 +1,6 @@
 variable "create_sg" {}
 
-variable "count_instance" {}
+# variable "count_instance" {}
 
 
 
@@ -16,9 +16,14 @@ variable "backend-key" {}
 variable "vpc_id" { default = "vpc-0cc7e1e8d0e236d78" }
 variable "default_sg" {}
 variable "created_by" {}
-variable "tags" {}
 
-
+variable "tags" {
+  type = map(string)
+}
+variable "count_instance" {
+  description = "Number of EC2 instances to create"
+  type        = number
+}
 
 variable "sg_name" {}
 variable "sg_description" {}
@@ -43,4 +48,9 @@ variable "egress_rule" {
     protocol    = string
     cidr_blocks = list(string)
   }))
+}
+
+
+variable "subnets" {
+  type = list(string)
 }

@@ -1,28 +1,15 @@
 
 # create_sg = false
-create_sg = true
-count_instance = "2"  
-
-#aws Instance Variables
+create_sg      = true
+count_instance = 2
+# AWS Provider Configuration
 region = "eu-central-1"
 
-ami_id         = "ami-071878317c449ae48"
-instance_type  = "t2.micro"
-key_name       = "devKey"
-vpc_id         = "vpc-0cc7e1e8d0e236d78"
-tags = {
-  "Pupose" = "Just For Test By Terraform"
-  "Name"   = "my-security-group"
-}
 
-machine_name   = "Emran"
+# Security Group Variables
 sg_name        = "SG_HTTP_SSH"
-backend-bucket = "dev-terraform-tutorial"
-backend-key    = "build/airflow/terraform.tfstate"
-created_by     = "Terraform"
-default_sg = "sg-0a28a74fed00b7df4"
-
 sg_description = "Allow SSH and HTTP inbound traffic"
+vpc_id         = "vpc-0cc7e1e8d0e236d78"
 
 ingress_rules = [
   {
@@ -40,7 +27,6 @@ ingress_rules = [
     cidr_blocks = ["0.0.0.0/0"]
   }
 ]
-
 egress_rule = [
   {
     description = "All"
@@ -50,3 +36,24 @@ egress_rule = [
     cidr_blocks = ["0.0.0.0/0"]
   }
 ]
+tags = {
+  "Pupose" = "Just For Test By Terraform"
+  "Name"   = "my-security-group"
+}
+
+#aws Instance Variables
+
+ami_id        = "ami-071878317c449ae48"
+instance_type = "t2.micro"
+key_name      = "devKey"
+
+machine_name = "Emran"
+subnets      = ["subnet-093f0311edbfe83fb", "subnet-0a21b416cfd5ab2a3", "subnet-04f0df809d5307602"]
+default_sg   = "sg-0a28a74fed00b7df4"
+
+backend-bucket = "dev-terraform-tutorial"
+backend-key    = "build/airflow/terraform.tfstate"
+created_by     = "Terraform"
+
+
+
