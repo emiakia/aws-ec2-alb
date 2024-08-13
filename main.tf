@@ -39,17 +39,19 @@ module "ec2" {
 
 }
 # Load Balancer and Target Group Configuration
-resource "aws_lb" "web_lb" {
-  name               = "web-lb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [module.security_group.id]
+module "alb" {
+  source          = "./modules/alb"
+  lb_name               = var.lb_name
+  lb_internal           = var.lb_internal
+  lb_load_balancer_type = var.lb_load_balancer_type
+  lb_security_groups    = [module.security_group.id]
   subnets            = var.subnets
 
-  enable_deletion_protection = false
+  lb_enable_deletion_protection = var.lb_enable_deletion_protection
 
-  tags = var.tags
+  lb_tags = var.lb_tags
 }
+
 
 resource "aws_lb_target_group" "web_tg" {
   name     = "web-tg"
@@ -70,8 +72,29 @@ resource "aws_lb_target_group" "web_tg" {
   tags = var.tags
 }
 
+
+# resource "aws_lb_target_group" "web_tg" {
+#   name     = "web-tg"
+#   port     = 80
+#   protocol = "HTTP"
+#   vpc_id   = var.vpc_id
+
+#   health_check {
+#     path                = "/"
+#     protocol            = "HTTP"
+#     matcher             = "200"
+#     interval            = 30
+#     timeout             = 5
+#     healthy_threshold   = 3
+#     unhealthy_threshold = 2
+#   }
+
+#   tags = var.tags
+# }
+
 resource "aws_lb_listener" "web_listener" {
-  load_balancer_arn = aws_lb.web_lb.arn
+  load_balancer_arn = module.alb.lb_arn
+
   port              = 80
   protocol          = "HTTP"
 

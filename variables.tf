@@ -54,3 +54,12 @@ variable "egress_rule" {
 variable "subnets" {
   type = list(string)
 }
+
+#Application Load balancer Variables 
+variable "lb_name" {}
+variable "lb_internal" {}
+variable "lb_load_balancer_type" {}
+variable "lb_enable_deletion_protection" {}
+variable "lb_tags" {}
+
+

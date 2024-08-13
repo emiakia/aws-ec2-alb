@@ -57,3 +57,12 @@ created_by     = "Terraform"
 
 
 
+
+#Application Load balancer Variables 
+lb_name = "web-lb"
+lb_internal = false
+lb_load_balancer_type = "application"
+lb_enable_deletion_protection = false
+lb_tags = {
+    "Pupose" = "Just For Test By Terraform"
+}
