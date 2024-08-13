@@ -4,7 +4,10 @@ This Terraform project provisions an AWS infrastructure that includes EC2 instan
 The project is fully modular, allowing you to reuse and customize the components as needed.
 
 ## Function
-  
+This Terraform project automates the setup of a scalable and secure web application infrastructure on AWS. It provisions EC2 instances, configures security groups, and sets up an Application Load Balancer (ALB) to distribute traffic across multiple servers. The ALB ensures high availability by routing requests to healthy instances, and you can view the DNS name of the ALB in the output.
+
+Once deployed, you can access the application by opening the ALB's DNS URL in your browser. On each refresh, the page content may change as the ALB routes requests to different EC2 instances, demonstrating load balancing in action.
+
 ## Project Structure
 
 - **modules/**: Contains all the Terraform modules used in this project.
