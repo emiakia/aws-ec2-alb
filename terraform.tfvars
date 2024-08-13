@@ -54,7 +54,7 @@ default_sg   = "sg-0a28a74fed00b7df4"
 backend-bucket = "dev-terraform-tutorial"
 backend-key    = "build/airflow/terraform.tfstate"
 created_by     = "Terraform"
-user_data = <<-EOF
+user_data      = <<-EOF
             #!/bin/bash
             yum update -y
             yum install -y httpd
