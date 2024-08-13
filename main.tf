@@ -2,7 +2,7 @@ provider "aws" {
   region = "eu-central-1"
 }
 module "security_group" {
-  source        = "./modules/security_group"
+  source = "./modules/security_group"
   # count = 1
   name          = var.sg_name
   description   = var.sg_description
@@ -25,27 +25,21 @@ module "ec2" {
   # tags = {
   #   Name = "${var.machine_name} ${count.index}"
   # }
-  tags            = var.tags
+  tags       = var.tags
   created_by = var.created_by
 
-  user_data = <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              systemctl start httpd
-              systemctl enable httpd
-              echo "<h1>Hello World from $(hostname -f)</h1>" > /var/www/html/index.html
-              EOF
+  user_data = var.user_data
 
 }
+
 # Load Balancer and Target Group Configuration
 module "alb" {
-  source          = "./modules/alb"
+  source                = "./modules/alb"
   lb_name               = var.lb_name
   lb_internal           = var.lb_internal
   lb_load_balancer_type = var.lb_load_balancer_type
   lb_security_groups    = [module.security_group.id]
-  subnets            = var.subnets
+  subnets               = var.subnets
 
   lb_enable_deletion_protection = var.lb_enable_deletion_protection
 
@@ -53,63 +47,46 @@ module "alb" {
 }
 
 
-resource "aws_lb_target_group" "web_tg" {
-  name     = "web-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+module "lbtg" {
+  source        = "./modules/lb_target_group"
+  lbtg_name     = var.lbtg_name
+  lbtg_port     = var.lbtg_port
+  lbtg_protocol = var.lbtg_protocol
+  lbtg_vpc_id   = var.vpc_id
 
-  health_check {
-    path                = "/"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 3
-    unhealthy_threshold = 2
-  }
+  lbtg_health_check_path     = var.lbtg_health_check_path
+  lbtg_health_check_protocol = var.lbtg_health_check_protocol
+  lbtg_health_check_matcher  = var.lbtg_health_check_matcher
+  lbtg_health_check_interval = var.lbtg_health_check_interval
+  lbtg_health_check_timeout  = var.lbtg_health_check_timeout
+  lbtg_healthy_threshold     = var.lbtg_healthy_threshold
+  lbtg_unhealthy_threshold   = var.lbtg_unhealthy_threshold
 
-  tags = var.tags
+  lbtg_tags = var.lbtg_tags
 }
 
 
-# resource "aws_lb_target_group" "web_tg" {
-#   name     = "web-tg"
-#   port     = 80
-#   protocol = "HTTP"
-#   vpc_id   = var.vpc_id
+module "web_listener" {
+  source                  = "./modules/lb_listener"
+  lblst_load_balancer_arn = module.alb.lb_arn
 
-#   health_check {
-#     path                = "/"
-#     protocol            = "HTTP"
-#     matcher             = "200"
-#     interval            = 30
-#     timeout             = 5
-#     healthy_threshold   = 3
-#     unhealthy_threshold = 2
-#   }
+  lblst_port     = var.lblst_port
+  lblst_protocol = var.lblst_protocol
 
-#   tags = var.tags
-# }
-
-resource "aws_lb_listener" "web_listener" {
-  load_balancer_arn = module.alb.lb_arn
-
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web_tg.arn
-  }
+  lblst_default_action_type             = var.lblst_default_action_type
+  lblst_default_action_target_group_arn = module.lbtg.tg_arn
 }
 
-resource "aws_lb_target_group_attachment" "web_tg_attachment" {
-  count            = var.count_instance
-  target_group_arn = aws_lb_target_group.web_tg.arn
-  target_id        = module.ec2.instance_ids[count.index]
-  port             = 80
+
+module "web_tg_attachment" {
+  source                   = "./modules/lb_target_group_attachment"
+  lbtgatt_count_instance   = module.ec2.instance_ids
+  lbtgatt_target_group_arn = module.lbtg.tg_arn
+  lbtgatt_target_id        = module.ec2.instance_ids
+  lbtgatt_port             = var.lbtgatt_port
 }
+
+
 
 
 

@@ -1,18 +1,18 @@
 resource "aws_lb_target_group" "web_tg" {
-  name     = "web-tg"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  name     = var.lbtg_name 
+  port     = var.lbtg_port
+  protocol = var.lbtg_protocol
+  vpc_id   = var.lbtg_vpc_id
 
   health_check {
-    path                = "/"
-    protocol            = "HTTP"
-    matcher             = "200"
-    interval            = 30
-    timeout             = 5
-    healthy_threshold   = 3
-    unhealthy_threshold = 2
+    path                = var.lbtg_health_check_path
+    protocol            = var.lbtg_health_check_protocol
+    matcher             = var.lbtg_health_check_matcher
+    interval            = var.lbtg_health_check_interval
+    timeout             = var.lbtg_health_check_timeout
+    healthy_threshold   = var.lbtg_healthy_threshold
+    unhealthy_threshold = var.lbtg_unhealthy_threshold
   }
 
-  tags = var.tags
+  tags = var.lbtg_tags
 }
