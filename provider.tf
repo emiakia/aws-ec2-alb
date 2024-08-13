@@ -3,14 +3,14 @@
 #   region = var.region
 # }
 
-terraform {
+# terraform {
 
-  backend "s3" {
-    bucket = "dev-terraform-tutorial"
-    key    = "terraform.tfstate"
-    region = "eu-central-1"
-  }
-}
+#   backend "s3" {
+#     bucket = "dev-terraform-tutorial"
+#     key    = "terraform.tfstate"
+#     region = "eu-central-1"
+#   }
+# }
 
 
 
