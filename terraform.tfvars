@@ -4,6 +4,7 @@ create_sg      = true
 count_instance = 2
 # AWS Provider Configuration
 region = "eu-central-1"
+# region = "us-east-1"
 
 
 # Security Group Variables
