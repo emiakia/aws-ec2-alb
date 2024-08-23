@@ -1,9 +1,9 @@
 # AWS Infrastructure with Terraform
 
-This Terraform project provisions an AWS infrastructure that includes EC2 instances, a security group, an Application Load Balancer (ALB), a target group, and necessary listener configurations. 
-The project is fully modular, allowing you to reuse and customize the components as needed.
+This Terraform project provisions an AWS infrastructure that includes EC2 instances, a security group, an Application Load Balancer (ALB), a target group, and necessary listener configurations. The project is fully modular, allowing you to reuse and customize the components as needed.
 
 ## Function
+
 This Terraform project automates the setup of a scalable and secure web application infrastructure on AWS. It provisions EC2 instances, configures security groups, and sets up an Application Load Balancer (ALB) to distribute traffic across multiple servers. The ALB ensures high availability by routing requests to healthy instances, and you can view the DNS name of the ALB in the output.
 
 Once deployed, you can access the application by opening the ALB's DNS URL in your browser. On each refresh, the page content may change as the ALB routes requests to different EC2 instances, demonstrating load balancing in action.
@@ -20,6 +20,7 @@ Once deployed, you can access the application by opening the ALB's DNS URL in yo
 - **main.tf**: The main entry point for the Terraform configuration, orchestrating the use of all modules.
 - **variables.tf**: Contains the variable declarations used throughout the project.
 - **terraform.tfvars**: Defines the values for the variables used in the project.
+- **terraform.yml**: GitHub Actions workflow file for automating Terraform CD (Continuous Deployment).
 
 ## Requirements
 
@@ -34,4 +35,3 @@ Once deployed, you can access the application by opening the ALB's DNS URL in yo
    mkdir terraform-aws-infrastructure
    cd terraform-aws-infrastructure
    git clone https://github.com/emiakia/terraform.git
-   
